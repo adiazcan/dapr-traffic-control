@@ -34,6 +34,25 @@ module serviceBus 'infra/service-bus.bicep' = {
   }
 }
 
+module MailDev 'apps/MailDev.bicep' = {
+  name: '${deployment().name}-maildev'
+  params: {
+    location:location
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+  }
+}
+
+module Mosquitto 'apps/mosquitto.bicep' = {
+  name: '${deployment().name}-mosquitto'
+  params: {
+    location: location
+    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
+    registry: registry
+    registryUsername: registryUsername
+    registryPassword: registryPassword
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Dapr components
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +80,7 @@ module daprEmail 'dapr/email.bicep' = {
   name: '${deployment().name}-dapr-email'
   params: {
     containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
-    host: 'localhost'
+    host: MailDev.outputs.fqdn
     port: '4025'
     smtppassword: '_password'
     smtpuser: '_username'
@@ -130,28 +149,6 @@ module TrafficControlService 'apps/TrafficControlService.bicep' = {
   ]
   params: {
     location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
-    registry: registry
-    registryUsername: registryUsername
-    registryPassword: registryPassword
-  }
-}
-
-module MailDev 'apps/MailDev.bicep' = {
-  name: '${deployment().name}-maildev'
-  dependsOn: [
-    daprEmail
-  ]
-  params: {
-    location:location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
-  }
-}
-
-module Mosquitto 'apps/mosquitto.bicep' = {
-  name: '${deployment().name}-mosquitto'
-  params: {
-    location:location
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
     registry: registry
     registryUsername: registryUsername
