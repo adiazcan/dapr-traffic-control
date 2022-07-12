@@ -24,4 +24,4 @@ app.UseCloudEvents();
 app.MapControllers();
 
 // let's go!
-app.Run("http://localhost:6002");
+app.Run();

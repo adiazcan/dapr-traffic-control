@@ -30,4 +30,4 @@ app.MapControllers();
 app.MapSubscribeHandler();
 
 // let's go!
-app.Run("http://localhost:6001");
+app.Run();

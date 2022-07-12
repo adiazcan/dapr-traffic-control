@@ -33,4 +33,4 @@ app.MapControllers();
 app.MapActorsHandlers();
 
 // let's go!
-app.Run("http://localhost:6000");
+app.Run();

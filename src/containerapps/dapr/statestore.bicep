@@ -10,7 +10,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01'
   name: containerAppsEnvironmentName
 
   resource daprComponent 'daprComponents@2022-03-01' = {
-    name: 'traffic-statestore'
+    name: 'statestore'
     properties: {
       componentType: 'state.azure.cosmosdb'
       version: 'v1'
@@ -43,7 +43,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01'
         }
       ]
       scopes: [
-        'trafficcontrolservice'
+        'trafficcontrol-svc'
       ]
     }
   }

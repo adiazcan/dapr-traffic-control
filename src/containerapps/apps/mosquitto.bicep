@@ -7,21 +7,15 @@ param registryUsername string
 param registryPassword string
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'vehicleregistration-svc'
+  name: 'mosquitto'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
-          name: 'vehicleregistration-svc'
-          image: 'mycontapp.azurecr.io/traffic/vehicleregistration-svc:1'
-          env: [
-            {
-              name: 'ASPNETCORE_URLS'
-              value: 'http://*:6002'
-            }
-          ]
+          name: 'mosquitto'
+          image: 'mycontapp.azurecr.io/traffic/mosquitto:1.0'
         }
       ]
       scale: {
@@ -31,14 +25,9 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
     configuration: {
       activeRevisionsMode: 'single'
-      dapr: {
-        enabled: true
-        appId: 'vehicleregistration-svc'
-        appPort: 6002
-      }
       ingress: {
-        external: false
-        targetPort: 6002
+        external: true
+        targetPort: 1883 //9001
         allowInsecure: true
       }
       secrets: [
@@ -53,7 +42,9 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           username:registryUsername
           passwordSecretRef: 'container-registry-password'
         }
-      ]      
+      ]    
     }
   }
 }
+
+output fqdn string = containerApp.properties.configuration.ingress.fqdn

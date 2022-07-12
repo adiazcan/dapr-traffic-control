@@ -7,15 +7,15 @@ param registryUsername string
 param registryPassword string
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
-  name: 'vehicleregistration-svc'
+  name: 'webapi-svc'
   location: location
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
       containers: [
         {
-          name: 'vehicleregistration-svc'
-          image: 'mycontapp.azurecr.io/traffic/vehicleregistration-svc:1'
+          name: 'webapi-svc'
+          image: 'mycontapp.azurecr.io/traffic/webapi-svc:1'
           env: [
             {
               name: 'ASPNETCORE_URLS'
