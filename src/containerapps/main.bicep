@@ -9,6 +9,15 @@ param registryPassword string
 ////////////////////////////////////////////////////////////////////////////////
 // Infrastructure
 ////////////////////////////////////////////////////////////////////////////////
+module storage 'infra/storage.bicep' = {
+  name: '${deployment().name}-infra-storage'
+  params: {
+    location: location
+    entryCamContainerName: 'trafficcontrol-entrycam'
+    exitCamContainerName: 'trafficcontrol-exitcam'
+    uniqueSeed: uniqueSeed
+  }  
+}
 
 module containerAppsEnvironment 'infra/container-apps-env.bicep' = {
   name: '${deployment().name}-infra-container-app-env'
@@ -42,21 +51,17 @@ module MailDev 'apps/MailDev.bicep' = {
   }
 }
 
-module Mosquitto 'apps/mosquitto.bicep' = {
-  name: '${deployment().name}-mosquitto'
+module mqtt 'infra/mqtt.bicep' = {
+  name: 'mqttDeploy'
   params: {
-    location: location
-    containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
-    registry: registry
-    registryUsername: registryUsername
-    registryPassword: registryPassword
-  }
+    location:location
+    uniqueSeed: uniqueSeed
+  }  
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Dapr components
 ////////////////////////////////////////////////////////////////////////////////
-
 module daprPubSub 'dapr/pubsub.bicep' = {
   name: '${deployment().name}-dapr-pubsub'
   params: {
@@ -91,9 +96,11 @@ module daprEntrycam 'dapr/entrycam.bicep' = {
   name: '${deployment().name}-dapr-entrycam'
   params: {
     containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
-    url: 'mqtt://${Mosquitto.outputs.fqdn}:1883'
-    topic: 'trafficcontrol/entrycam'
-    consumerID: '{uuid}'
+    connectionString: mqtt.outputs.eventHubEntryCamConnectionString
+    consumerGroup: 'trafficcontrolservice'
+    storageAccountKey: storage.outputs.storageAccountContainerKey
+    storageAccountName: storage.outputs.storageAccountName
+    storageContainerName: storage.outputs.storageAccountEntryCamContainerName
   }
 }
 
@@ -101,15 +108,17 @@ module daprExitcam 'dapr/exitcam.bicep' = {
   name: '${deployment().name}-dapr-exitcam'
   params: {
     containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
-    url: 'mqtt://${Mosquitto.outputs.fqdn}:1883'
-    topic: 'trafficcontrol/exitcam'
-    consumerID: '{uuid}'
+    connectionString: mqtt.outputs.eventHubExitCamConnectionString
+    consumerGroup: 'trafficcontrolservice'
+    storageAccountKey: storage.outputs.storageAccountContainerKey
+    storageAccountName: storage.outputs.storageAccountName
+    storageContainerName: storage.outputs.storageAccountExitCamContainerName
   }
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 // Container apps
 ////////////////////////////////////////////////////////////////////////////////
-
 module VehicleRegistrationService 'apps/VehicleRegistrationService.bicep' = {
   name: '${deployment().name}-app-vehicleregistration-svc'
   dependsOn: [
@@ -145,7 +154,7 @@ module TrafficControlService 'apps/TrafficControlService.bicep' = {
   dependsOn: [
     daprStateStore
     daprPubSub
-    Mosquitto
+    mqtt
   ]
   params: {
     location: location

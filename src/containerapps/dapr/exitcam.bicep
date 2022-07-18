@@ -1,8 +1,10 @@
 param containerAppsEnvironmentName string
 
-param url string
-param topic string
-param consumerID string
+param connectionString string
+param consumerGroup string
+param storageAccountName string
+param storageAccountKey string
+param storageContainerName string
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' existing = {
   name: containerAppsEnvironmentName
@@ -10,21 +12,29 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01'
   resource daprComponent 'daprComponents@2022-03-01' = {
     name: 'exitcam'
     properties: {
-      componentType: 'bindings.mqtt'
+      componentType: 'bindings.azure.eventhubs'
       version: 'v1'
       metadata: [
         {
-          name: 'url'
-          value: url
+          name: 'connectionString'
+          value: connectionString
         }
         {
-          name: 'topic'
-          value: topic
-        }        
+          name: 'consumerGroup'
+          value: consumerGroup
+        }   
         {
-          name: 'consumerID'
-          value: consumerID
-        }        
+          name: 'storageAccountName'
+          value: storageAccountName
+        }     
+        {
+          name: 'storageAccountKey'
+          value: storageAccountKey
+        }
+        {
+          name: 'storageContainerName'
+          value: storageContainerName
+        }
       ]
       scopes: [
         'trafficcontrol-svc'
@@ -33,4 +43,4 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01'
   }
 }
 
-output daprExitCamName string = containerAppsEnvironment::daprComponent.name
+output daprEntryCamName string = containerAppsEnvironment::daprComponent.name
