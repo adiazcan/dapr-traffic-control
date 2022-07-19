@@ -8,7 +8,7 @@ public class AzureTrafficControlService : ITrafficControlService
 
     public AzureTrafficControlService()
     {
-        client = DeviceClient.CreateFromConnectionString("HostName=iothub-dapr-ussc-demo.azure-devices.net;DeviceId=simulation;SharedAccessKey=/cRA4cYbcyC7FakekeyNV6CrfugBe8Ka2z2m8=", TransportType.Mqtt);
+        client = DeviceClient.CreateFromConnectionString("HostName=iothub-pw7tjgsfkhl5y.azure-devices.net;DeviceId=simulation;SharedAccessKey=r+Q1QvkENi9LyRG/BEMh/aW9kwpyc9RM78IHykVgaLY=", TransportType.Mqtt);
     }
 
     public Task SendVehicleEntryAsync(VehicleRegistered vehicleRegistered)

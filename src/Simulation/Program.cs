@@ -12,7 +12,10 @@ for (var i = 0; i < lanes; i++)
 {
     int camNumber = i + 1;
     ITrafficControlService trafficControlService;
-    if (!environment.Equals("self-hosted")) 
+    
+    Console.WriteLine($"Connecting to {environment}");
+
+    if (environment.Equals("self-hosted")) 
     {
         trafficControlService = await MqttTrafficControlService.CreateAsync(camNumber);
     }

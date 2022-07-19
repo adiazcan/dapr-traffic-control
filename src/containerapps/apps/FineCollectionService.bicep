@@ -1,14 +1,19 @@
 param location string
-
+param keyvault string
 param containerAppsEnvironmentId string
 param registry string
 param registryUsername string
 @secure()
 param registryPassword string
+@secure()
+param licensekey string
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'finecollection-svc'
   location: location
+  identity: {
+      type: 'SystemAssigned'
+  } 
   properties: {
     managedEnvironmentId: containerAppsEnvironmentId
     template: {
@@ -20,6 +25,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'ASPNETCORE_URLS'
               value: 'http://*:6001'
+            }
+            {
+              name: 'KEY_VAULT_NAME'
+              value: keyvault
+            }
+            {
+              name: 'finecalculator.licensekey'
+              secretRef: 'finecalculator.licensekey'
             }
           ]
         }
@@ -45,7 +58,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
         {
           name: 'container-registry-password'
           value: registryPassword
-        }      
+        }
+        {
+          name: 'finecalculator.licensekey'
+          value: licensekey
+        }
       ]
       registries: [
         {
@@ -57,3 +74,5 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     }
   }
 }
+
+output principalId string = containerApp.identity.principalId

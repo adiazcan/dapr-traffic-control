@@ -15,7 +15,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'trafficcontrol-svc'
-          image: 'mycontapp.azurecr.io/traffic/trafficcontrol-svc:1'
+          image: 'mycontapp.azurecr.io/traffic/trafficcontrol-svc:2'
           env: [
             {
               name: 'ASPNETCORE_URLS'

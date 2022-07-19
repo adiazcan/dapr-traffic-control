@@ -6,6 +6,8 @@ param registryUsername string
 @secure()
 param registryPassword string
 
+param objectId string
+
 ////////////////////////////////////////////////////////////////////////////////
 // Infrastructure
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +59,22 @@ module mqtt 'infra/mqtt.bicep' = {
     location:location
     uniqueSeed: uniqueSeed
   }  
+}
+
+module keyvault 'infra/keyvault.bicep' = {
+  name: '${deployment().name}-keyvault'
+  params: {
+    location:location
+    uniqueSeed: uniqueSeed
+    objectId: objectId
+    secretName: 'licensekey'
+    secretValue: 'HX783-K2L7V-CRJ4A-5PN1G'
+  }
+}
+
+
+resource keyVaultReader 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: keyvault.outputs.name
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +160,8 @@ module FineCollectionService 'apps/FineCollectionService.bicep' = {
   ]
   params: {
     location: location
+    keyvault: keyvault.name
+    licensekey: keyVaultReader.getSecret('licensekey')
     containerAppsEnvironmentId: containerAppsEnvironment.outputs.id
     registry: registry
     registryUsername: registryUsername
