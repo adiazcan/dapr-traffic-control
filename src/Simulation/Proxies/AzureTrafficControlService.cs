@@ -5,10 +5,11 @@ namespace Simulation.Proxies;
 public class AzureTrafficControlService : ITrafficControlService
 {        
     private readonly DeviceClient client;
+    private readonly string iotConnectionString = "HostName=iothub-pw7tjgsfkhl5y.azure-devices.net;DeviceId=simulation;SharedAccessKey=Ya26eSAD6qS55MSSlL3Jf6pm+7TzFSs8LxX4NqzamVE=";
 
     public AzureTrafficControlService()
     {
-        client = DeviceClient.CreateFromConnectionString("HostName=iothub-pw7tjgsfkhl5y.azure-devices.net;DeviceId=simulation;SharedAccessKey=r+Q1QvkENi9LyRG/BEMh/aW9kwpyc9RM78IHykVgaLY=", TransportType.Mqtt);
+        client = DeviceClient.CreateFromConnectionString(iotConnectionString, TransportType.Mqtt);
     }
 
     public Task SendVehicleEntryAsync(VehicleRegistered vehicleRegistered)
