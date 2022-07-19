@@ -4,7 +4,7 @@ param location string
 
 param enabledForDeployment bool = false
 param enabledForDiskEncryption bool = false
-param enabledForTemplateDeployment bool = false
+param enabledForTemplateDeployment bool = true
 param tenantId string = subscription().tenantId
 
 param objectId string

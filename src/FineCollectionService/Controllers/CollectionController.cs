@@ -21,8 +21,14 @@ public class CollectionController : ControllerBase
         if (_fineCalculatorLicenseKey == null)
         {
             bool runningInK8s = Convert.ToBoolean(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") ?? "false");
+            bool runningInACA = !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("CONTAINER_APP_HOSTNAME"));
+
             var metadata = new Dictionary<string, string> { { "namespace", "dapr-trafficcontrol" } };
-            if (runningInK8s)
+            if (runningInACA)
+            {
+                _fineCalculatorLicenseKey = Environment.GetEnvironmentVariable("finecalculator.licensekey");
+            }
+            else if (runningInK8s)
             {
                 var k8sSecrets = daprClient.GetSecretAsync(
                     "kubernetes", "trafficcontrol-secrets", metadata).Result;

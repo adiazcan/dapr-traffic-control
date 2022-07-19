@@ -20,7 +20,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       containers: [
         {
           name: 'finecollection-svc'
-          image: 'mycontapp.azurecr.io/traffic/finecollection-svc:1'
+          image: 'mycontapp.azurecr.io/traffic/finecollection-svc:3'
           env: [
             {
               name: 'ASPNETCORE_URLS'
@@ -32,7 +32,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'finecalculator.licensekey'
-              secretRef: 'finecalculator.licensekey'
+              secretRef: 'finecalculator-licensekey'
             }
           ]
         }
@@ -60,7 +60,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           value: registryPassword
         }
         {
-          name: 'finecalculator.licensekey'
+          name: 'finecalculator-licensekey'
           value: licensekey
         }
       ]
